@@ -1,10 +1,15 @@
 #![feature(test)]
+#[macro_use]
+extern crate lazy_static;
 
 extern crate regex;
 extern crate test;
 
 use regex::Regex;
 
+lazy_static! {
+    static ref DOLLAR_SEARCH: Regex = Regex::new(r"DOLLAR|USD|\$").unwrap();
+}
 /// Finds the multiplier within a couple of lines that dollar is mentioned
 ///
 /// #Examples
@@ -25,14 +30,11 @@ use regex::Regex;
 /// let multiplier = rust_vs_python_2::find_multiplier(&table_header);
 /// ```
 pub fn find_multiplier(table_header: &Vec<String>) -> u32 {
-    // dollar search terms for finding within the header
-    let dollar_search = Regex::new(r"DOLLAR|USD|\$").unwrap();
-
     // find the line within the header that contains the dollar term
     let line_index = table_header
         .iter()
         .enumerate()
-        .find(|(_, line)| dollar_search.is_match(&line.to_uppercase()))
+        .find(|(_, line)| DOLLAR_SEARCH.is_match(&line.to_uppercase()))
         .map(|(x, _)| x);
 
     // if dollar is found within the index then find the number multiplier nearby
